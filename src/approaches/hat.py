@@ -110,6 +110,8 @@ class Appr(object):
         np.random.shuffle(r)
         r=torch.LongTensor(r).cuda()
 
+        print("entire batch length: {}".format(len(r)))
+        
         # Loop batches
         for i in range(0,len(r),self.sbatch):
             if i+self.sbatch<=len(r): b=r[i:i+self.sbatch]
@@ -117,8 +119,9 @@ class Appr(object):
             images=torch.autograd.Variable(x[b],volatile=False)
             targets=torch.autograd.Variable(y[b],volatile=False)
             task=torch.autograd.Variable(torch.LongTensor([t]).cuda(),volatile=False)
-            s=(self.smax-1/self.smax)*i/len(r)+1/self.smax
-
+            s=(self.smax-1/self.smax)*i/len(r)+1/self.smax # positive scaling parameter
+            print("batch b:{} | s:{}".format(i,s))
+            
             # Forward
             outputs,masks=self.model.forward(task,images,s=s)
             output=outputs[t]
